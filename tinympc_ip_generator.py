@@ -37,6 +37,7 @@ class TinyMPCIPGenerator:
                 check_termination=10)
         
         self.N = N
+        self.control_freq = control_freq
         self.max_iter = max_iter
         self.precision = precision
         self.data_type = 'float' if precision == 'float' else 'double'
@@ -707,8 +708,11 @@ int main() {{
 
     def generate_tcl(self):
         """Generate Vitis HLS TCL script for IP core"""
-        return f"""# TinyMPC IP Core HLS Project ({self.precision})
-open_project -reset tinympc_ip_{self.precision}
+        freq_str = f"{int(self.control_freq)}Hz" if self.control_freq == int(self.control_freq) else f"{self.control_freq}Hz"
+        project_name = f"tinympc_N{self.N}_{freq_str}_{self.precision}"
+        
+        return f"""# TinyMPC IP Core HLS Project (N={self.N}, {freq_str}, {self.precision})
+open_project -reset {project_name}
 add_files tinympc_solver.cpp
 add_files -tb testbench.cpp
 set_top tinympc_solver
@@ -726,8 +730,8 @@ csim_design -clean
 
 # Optional: Run synthesis and implementation
 csynth_design
-cosim_design
-# export_design -format ip_catalog
+# cosim_design
+export_design -format ip_catalog
 
 exit"""
 
@@ -760,13 +764,20 @@ def main():
     parser.add_argument('--freq', type=float, default=100.0, help='Control frequency (Hz)')
     parser.add_argument('--precision', choices=['float', 'double'], default='float', help='Data precision')
     parser.add_argument('--max_iter', type=int, default=100, help='Maximum ADMM iterations')
-    parser.add_argument('--output', default='tinympc_ip', help='Output directory')
+    parser.add_argument('--output', default=None, help='Output directory (auto-generated if not specified)')
     
     args = parser.parse_args()
     
+    # Auto-generate output directory name if not specified
+    if args.output is None:
+        freq_str = f"{int(args.freq)}Hz" if args.freq == int(args.freq) else f"{args.freq}Hz"
+        output_dir = f"tinympcproj_N{args.N}_{freq_str}_{args.precision}"
+    else:
+        output_dir = args.output
+    
     generator = TinyMPCIPGenerator(N=args.N, control_freq=args.freq, 
                                   precision=args.precision, max_iter=args.max_iter)
-    generator.generate_all(args.output)
+    generator.generate_all(output_dir)
 
 
 if __name__ == "__main__":
