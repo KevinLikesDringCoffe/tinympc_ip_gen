@@ -204,7 +204,7 @@ void tinympc_solver(
     int max_iter,
     int check_termination_iter
 ) {{
-#pragma HLS INTERFACE m_axi port=main_memory bundle=gmem depth={self.solver.nx + 2 * self.solver.N * self.solver.nx + 2 * (self.solver.N-1) * self.solver.nu}
+#pragma HLS INTERFACE m_axi port=main_memory offset=slave bundle=gmem0 depth={self.solver.nx + 2 * self.solver.N * self.solver.nx + 2 * (self.solver.N-1) * self.solver.nu}
 #pragma HLS INTERFACE s_axilite port=max_iter
 #pragma HLS INTERFACE s_axilite port=check_termination_iter
 #pragma HLS INTERFACE s_axilite port=return
@@ -723,7 +723,7 @@ add_files -tb testbench.cpp
 set_top tinympc_solver
 
 open_solution -reset "solution1"
-set_part {{xc7z020clg400-1}}
+set_part {{xczu3eg-sbva484-1-e}}
 create_clock -period 10
 
 # Optimization directives
