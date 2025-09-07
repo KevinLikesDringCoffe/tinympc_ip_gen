@@ -5,8 +5,6 @@ Provides low-level hardware access using PYNQ
 
 import numpy as np
 import time
-from pynq import Overlay
-from pynq import allocate
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,6 +40,11 @@ class HardwareInterface:
             bitstream_path: Path to .bit file
             hwh_path: Path to .hwh file (optional, auto-detected if None)
         """
+        try:
+            from pynq import Overlay
+        except ImportError:
+            raise ImportError("PYNQ library not found. Please install PYNQ or run on PYNQ-supported hardware.")
+        
         try:
             if hwh_path is None:
                 # Try to find corresponding .hwh file
@@ -115,6 +118,11 @@ class HardwareInterface:
             del self.memory_buffer
         
         # Allocate physically contiguous memory
+        try:
+            from pynq import allocate
+        except ImportError:
+            raise ImportError("PYNQ library not found. Please install PYNQ or run on PYNQ-supported hardware.")
+        
         self.memory_buffer = allocate(shape=(memory_size,), dtype=np.float32)
         self.memory_size = memory_size
         

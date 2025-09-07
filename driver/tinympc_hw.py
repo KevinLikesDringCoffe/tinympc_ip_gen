@@ -8,8 +8,12 @@ import time
 import logging
 import os
 from threading import Thread, Event
-from .hw_interface import HardwareInterface
-from .memory_manager import MemoryManager
+try:
+    from .hw_interface import HardwareInterface
+    from .memory_manager import MemoryManager
+except ImportError:
+    from hw_interface import HardwareInterface
+    from memory_manager import MemoryManager
 
 logger = logging.getLogger(__name__)
 
