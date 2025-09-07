@@ -58,7 +58,7 @@ class TinyMPCDriver:
     CTRL_IDLE_BIT = 0x04        # IP core idle
     CTRL_READY_BIT = 0x08       # Ready for new computation
     
-    def __init__(self, overlay_path=None, ip_name="tinympc_hls_wrapper_0", nx=12, nu=4, n_horizon=10, clock_frequency_mhz=250):
+    def __init__(self, overlay_path=None, ip_name="tinympc_solver_0", nx=12, nu=4, n_horizon=10, clock_frequency_mhz=250):
         """
         Initialize TinyMPC driver.
         

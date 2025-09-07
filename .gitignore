@@ -4,3 +4,4 @@
 /bitstream
 /driver/__pycache__
 /driver/examples/__pycache__
+*.ipynb
