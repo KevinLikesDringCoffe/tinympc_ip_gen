@@ -174,24 +174,29 @@ bool check_termination(
             x_min_rows.append(f"    {{{x_min_vals}}}")
             x_max_rows.append(f"    {{{x_max_vals}}}")
         
+        u_min_str = ",\n".join(u_min_rows)
+        u_max_str = ",\n".join(u_max_rows)
+        x_min_str = ",\n".join(x_min_rows)
+        x_max_str = ",\n".join(x_max_rows)
+        
         return f"""#include "tinympc_solver.h"
 #include <string.h>
 
 // Hardcoded constraints as ROM (constant arrays) with dynamic size N={self.N}
 const data_t U_MIN[N_MINUS_1][NU] = {{
-{",\n".join(u_min_rows)}
+{u_min_str}
 }};
 
 const data_t U_MAX[N_MINUS_1][NU] = {{
-{",\n".join(u_max_rows)}
+{u_max_str}
 }};
 
 const data_t X_MIN[N][NX] = {{
-{",\n".join(x_min_rows)}
+{x_min_str}
 }};
 
 const data_t X_MAX[N][NX] = {{
-{",\n".join(x_max_rows)}
+{x_max_str}
 }};
 
 void tinympc_solver(
