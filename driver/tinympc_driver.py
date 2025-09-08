@@ -8,7 +8,8 @@ This driver implementation matches the register interface and control flow
 from run_hls_ip() in pynq_tinympc_test.py for maximum compatibility with
 the HLS-generated IP core.
 
-Version 2.0.0 - Restructured to match run_hls_ip register layout:
+Version 2.1.0 - Updated memory layout to match generated solver code:
+- Memory layout: X0 -> XREF -> UREF -> X_OUT -> U_OUT
 - Control register (0x00): Combined status/control bits
 - Memory address split into low/high 32-bit registers (0x10/0x14)
 - Max iterations parameter at 0x1C
@@ -77,14 +78,15 @@ class TinyMPCDriver:
         self.clock_frequency_mhz = clock_frequency_mhz
         
         # Calculate memory layout offsets based on problem dimensions
+        # Memory layout: X0 -> XREF -> UREF -> X_OUT -> U_OUT
         self.MEM_X0_OFFSET = 0
         self.MEM_XREF_OFFSET = self.MEM_X0_OFFSET + self.NX
         self.MEM_UREF_OFFSET = self.MEM_XREF_OFFSET + (self.N_HORIZON * self.NX)
-        self.MEM_U_OUT_OFFSET = self.MEM_UREF_OFFSET + ((self.N_HORIZON - 1) * self.NU)
-        self.MEM_X_OUT_OFFSET = self.MEM_U_OUT_OFFSET + ((self.N_HORIZON - 1) * self.NU)
+        self.MEM_X_OUT_OFFSET = self.MEM_UREF_OFFSET + ((self.N_HORIZON - 1) * self.NU)
+        self.MEM_U_OUT_OFFSET = self.MEM_X_OUT_OFFSET + (self.N_HORIZON * self.NX)
         
         # Total memory size calculation
-        self.TOTAL_MEM_SIZE = self.MEM_X_OUT_OFFSET + (self.N_HORIZON * self.NX)
+        self.TOTAL_MEM_SIZE = self.MEM_U_OUT_OFFSET + ((self.N_HORIZON - 1) * self.NU)
         
         self.overlay = None
         self.ip_core = None
@@ -549,7 +551,7 @@ class TinyMPCDriver:
     def get_info(self):
         """Get driver and hardware information."""
         info = {
-            'driver_version': '2.0.0',  # Updated version to reflect run_hls_ip compatibility
+            'driver_version': '2.1.0',  # Updated memory layout to match generated solver
             'nx': self.NX,
             'nu': self.NU,
             'horizon': self.N_HORIZON,
