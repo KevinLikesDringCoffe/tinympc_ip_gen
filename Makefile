@@ -2,7 +2,7 @@
 # Usage: make N=<horizon> FREQ=<frequency>
 
 # Parameters
-N ?= 20
+N ?= 40
 FREQ ?= 100
 
 # Project paths
