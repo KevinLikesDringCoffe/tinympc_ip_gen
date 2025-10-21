@@ -472,6 +472,7 @@ class TinyMPCDriver:
             # Step 2: Load input data to memory buffer
             self.load_input_data(x0, xref, uref)
             
+            setup_time = time.time() - start_time
             # Step 3: Start computation
             self.start_computation()
             
@@ -482,7 +483,7 @@ class TinyMPCDriver:
             # Step 5: Retrieve results
             states, controls = self.get_output_data()
             
-            execution_time = time.time() - start_time
+            execution_time = time.time() - start_time - setup_time
             print(f"Hardware execution completed in {execution_time:.4f} seconds")
             
             return {
@@ -491,6 +492,7 @@ class TinyMPCDriver:
                 'states_all': states,  # For compatibility with TinyMPC
                 'controls_all': controls,
                 'solve_time': execution_time,
+                'setup_time': setup_time,
                 'max_iter': max_iter,
                 'check_termination_iter': check_termination_iter
             }
